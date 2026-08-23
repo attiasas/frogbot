@@ -29,8 +29,8 @@ const (
 	jfrogXrayUrlEnv        = "JF_XRAY_URL"
 	jfrogArtifactoryUrlEnv = "JF_ARTIFACTORY_URL"
 	jfrogReleasesRepoEnv   = "JF_RELEASES_REPO"
-	JFrogUserEnv           = "JF_USER"     // TODO should add support once Catalog Enrich API is fixed (remember adding to extraction tests)
-	JFrogPasswordEnv       = "JF_PASSWORD" // TODO should add support once Catalog Enrich API is fixed (remember adding to extraction tests)
+	JFrogUserEnv           = "JF_USER"
+	JFrogPasswordEnv       = "JF_PASSWORD"
 	JFrogTokenEnv          = "JF_ACCESS_TOKEN"
 	jfrogProjectEnv        = "JF_PROJECT_KEY"
 
@@ -50,6 +50,11 @@ const (
 	GitApiEndpointEnv             = "JF_GIT_API_ENDPOINT"
 	GitlabScanResultsOutputDirEnv = "JF_SCAN_RESULTS_OUTPUT_DIR"
 	GitWorkspaceEnv               = "JF_GIT_WORKSPACE"
+
+	// The 'GITHUB_ACTIONS' environment variable exists when the CI is GitHub Actions
+	GitHubActionsEnv = "GITHUB_ACTIONS"
+	// The 'GITHUB_WORKFLOW_REF' environment variable contains the ref path to the workflow file, e.g. owner/repo/.github/workflows/frogbot.yml@refs/heads/main
+	GitHubWorkflowRefEnv = "GITHUB_WORKFLOW_REF"
 
 	// Placeholders for templates
 	PackagePlaceHolder    = "{IMPACTED_PACKAGE}"
