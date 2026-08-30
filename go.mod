@@ -131,7 +131,7 @@ require (
 )
 
 // attiasas:services-sub-scan-source-code
-replace github.com/jfrog/jfrog-cli-security => github.com/attiasas/jfrog-cli-security v0.0.0-20260827064544-2ce11a51ed60
+replace github.com/jfrog/jfrog-cli-security => github.com/attiasas/jfrog-cli-security v0.0.0-20260830073119-6c97a5cc8fe4
 
 // replace github.com/jfrog/jfrog-cli-core/v2 => github.com/jfrog/jfrog-cli-core/v2 dev
 
