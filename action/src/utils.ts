@@ -72,7 +72,7 @@ export class Utils {
             if (!gitToken) {
                 throw new Error(
                     'Git token not found. Please ensure GITHUB_TOKEN is available by setting permissions in your workflow, ' +
-                    'or set JF_GIT_TOKEN manually.'
+                        'or set JF_GIT_TOKEN manually.',
                 );
             }
             core.exportVariable('JF_GIT_TOKEN', gitToken);
@@ -120,6 +120,46 @@ export class Utils {
         }
 
         let res: number = await exec(Utils.getExecutableName(), ['scan-repository']);
+        if (res !== core.ExitCode.Success) {
+            throw new Error('Frogbot exited with exit code ' + res);
+        }
+    }
+
+    /**
+     * Execute frogbot auto-pr command.
+     */
+    public static async execAutoPr() {
+        core.exportVariable('JF_COMPONENT_NAME', core.getInput('component-name'));
+        core.exportVariable('JF_AFFECTED_VERSION', core.getInput('affected-version'));
+        core.exportVariable('JF_FIX_VERSION', core.getInput('fix-version'));
+
+        const commitHash: string = core.getInput('commit-hash');
+        if (commitHash) {
+            core.exportVariable('JF_COMMIT_HASH', commitHash);
+        }
+
+        const branchName: string = core.getInput('branch-name');
+        if (branchName) {
+            core.exportVariable('JF_GIT_BASE_BRANCH', branchName);
+        } else if (!process.env.JF_GIT_BASE_BRANCH) {
+            const git: SimpleGit = simpleGit();
+            try {
+                const currentBranch: BranchSummary = await git.branch();
+                if (!currentBranch.current) {
+                    // Checking out by commit-hash leaves the working tree in detached HEAD, so git reports no current branch.
+                    throw new Error(
+                        'Cannot resolve JF_GIT_BASE_BRANCH: the workspace is on a detached HEAD ' +
+                            '(this happens when the workflow was invoked with commit-hash only). ' +
+                            'Provide the `branch-name` input alongside `commit-hash`, or set JF_GIT_BASE_BRANCH explicitly.',
+                    );
+                }
+                core.exportVariable('JF_GIT_BASE_BRANCH', currentBranch.current);
+            } catch (error) {
+                throw new Error('Error getting current branch from the .git folder: ' + error);
+            }
+        }
+
+        const res: number = await exec(Utils.getExecutableName(), ['auto-pr']);
         if (res !== core.ExitCode.Success) {
             throw new Error('Frogbot exited with exit code ' + res);
         }
@@ -271,9 +311,7 @@ export class Utils {
             throw new Error(`${JSON.stringify(responseJson.errors)}`);
         }
         if (responseJson.error) {
-            throw new Error(
-                `${responseJson.error}${responseJson.error_description ? ': ' + responseJson.error_description : ''}`,
-            );
+            throw new Error(`${responseJson.error}${responseJson.error_description ? ': ' + responseJson.error_description : ''}`);
         }
         if (!responseJson.access_token) {
             throw new Error(`Token exchange response is missing access_token. Full response: ${responseString}`);

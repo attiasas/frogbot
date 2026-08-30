@@ -10,6 +10,7 @@ import (
 	"github.com/jfrog/jfrog-client-go/utils/io/fileutils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 
+	"github.com/jfrog/frogbot/v3/autopr"
 	"github.com/jfrog/frogbot/v3/scanpullrequest"
 	"github.com/jfrog/frogbot/v3/scanrepository"
 	"github.com/jfrog/frogbot/v3/utils"
@@ -39,6 +40,15 @@ func GetCommands() []*clitool.Command {
 			Usage:   "Scan the current branch and create pull requests with fixes if needed",
 			Action: func(ctx *clitool.Context) error {
 				return Exec(&scanrepository.ScanRepositoryCmd{}, ctx.Command.Name)
+			},
+			Flags: []clitool.Flag{},
+		},
+		{
+			Name:    utils.AutoPr,
+			Aliases: []string{"apr"},
+			Usage:   "Fix a known vulnerable dependency and open a pull request with the fix",
+			Action: func(ctx *clitool.Context) error {
+				return Exec(&autopr.AutoPrCmd{}, ctx.Command.Name)
 			},
 			Flags: []clitool.Flag{},
 		},
@@ -78,12 +88,23 @@ func Exec(command FrogbotCommand, commandName string) (err error) {
 	log.Info(fmt.Sprintf("Running Frogbot %q command", commandName))
 	err = command.Run(frogbotDetails.Repository, frogbotDetails.GitClient)
 
-	if err != nil {
+	switch {
+	case shouldReportError(err):
 		if reportError := xsc.ReportError(frogbotDetails.XrayVersion, frogbotDetails.XscVersion, frogbotDetails.ServerDetails, err, "frogbot", frogbotDetails.Repository.JFrogProjectKey); reportError != nil {
 			log.Debug(reportError)
 		}
-	} else {
+	case err != nil:
+		log.Info(err.Error())
+	default:
 		log.Info(fmt.Sprintf("Frogbot %q command finished successfully", commandName))
 	}
 	return err
+}
+
+func shouldReportError(err error) bool {
+	if err == nil {
+		return false
+	}
+	var skipped *autopr.ErrAutoPrSkipped
+	return !errors.As(err, &skipped)
 }

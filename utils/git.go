@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -308,6 +310,31 @@ func (gm *GitManager) AddAllAndCommit(commitMessage string, impactedDependencyNa
 		return err
 	}
 	if isClean {
+		return &ErrNothingToCommit{PackageName: impactedDependencyName}
+	}
+	return gm.commit(commitMessage)
+}
+
+func (gm *GitManager) AddTrackedAndCommit(commitMessage, impactedDependencyName string) error {
+	worktree, err := gm.localGitRepository.Worktree()
+	if err != nil {
+		return err
+	}
+	status, err := worktree.Status()
+	if err != nil {
+		return err
+	}
+	hasTrackedChanges := false
+	for fileName, fileStatus := range status {
+		if fileStatus.Worktree == git.Untracked || fileStatus.Staging == git.Added {
+			continue
+		}
+		if _, err = worktree.Add(fileName); err != nil {
+			return err
+		}
+		hasTrackedChanges = true
+	}
+	if !hasTrackedChanges {
 		return &ErrNothingToCommit{PackageName: impactedDependencyName}
 	}
 	return gm.commit(commitMessage)
@@ -644,4 +671,44 @@ func removeCredentialsFromUrlIfNeeded(url string) string {
 		return url
 	}
 	return clientutils.RemoveCredentials(url, matchedResult)
+}
+
+func SnapshotUntrackedFiles(workspaceDir string) (map[string]struct{}, error) {
+	localRepo, err := git.PlainOpen(workspaceDir)
+	if err != nil {
+		return nil, err
+	}
+	worktree, err := localRepo.Worktree()
+	if err != nil {
+		return nil, err
+	}
+	gitStatus, err := worktree.Status()
+	if err != nil {
+		return nil, err
+	}
+
+	untrackedFiles := make(map[string]struct{})
+	for relativeFilePath, status := range gitStatus {
+		if status.Worktree == git.Untracked {
+			untrackedFiles[relativeFilePath] = struct{}{}
+		}
+	}
+	return untrackedFiles, nil
+}
+
+func CleanUntrackedFiles(workspaceDir string, untrackedFilesBefore map[string]struct{}) error {
+	untrackedFilesAfter, err := SnapshotUntrackedFiles(workspaceDir)
+	if err != nil {
+		return err
+	}
+	for relativeFilePath := range untrackedFilesAfter {
+		if _, existedBefore := untrackedFilesBefore[relativeFilePath]; existedBefore {
+			continue
+		}
+		log.Debug(fmt.Sprintf("Removing untracked file '%s'", relativeFilePath))
+		if deletionErr := os.Remove(filepath.Join(workspaceDir, relativeFilePath)); deletionErr != nil {
+			err = errors.Join(err, fmt.Errorf("file '%s': %s", relativeFilePath, deletionErr.Error()))
+		}
+	}
+	return err
 }

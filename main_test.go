@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"github.com/jfrog/frogbot/v3/autopr"
 	"github.com/jfrog/frogbot/v3/utils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 	clientTests "github.com/jfrog/jfrog-client-go/utils/tests"
@@ -12,6 +14,14 @@ import (
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestShouldReportError(t *testing.T) {
+	skipped := &autopr.ErrAutoPrSkipped{Reason: "branch exists"}
+	assert.False(t, shouldReportError(skipped))
+	assert.False(t, shouldReportError(fmt.Errorf("wrapped: %w", skipped)))
+	assert.True(t, shouldReportError(errors.New("real failure")))
+	assert.False(t, shouldReportError(nil))
+}
 
 var IntegrationTestPackages = []string{
 	"github.com/jfrog/frogbot/v3",

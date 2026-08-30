@@ -1,4 +1,6 @@
 import os from 'os';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { Utils } from '../src/utils';
 
 jest.mock('os');
@@ -20,10 +22,43 @@ describe('Frogbot Action Tests', () => {
         delete process.env.GITHUB_SERVER_URL;
     });
 
+    describe('Auto-PR action contract', () => {
+        const repositoryRoot: string = join(__dirname, '..', '..');
+
+        it('Declares the Auto-PR inputs in the root action manifest', () => {
+            const manifest: string = readFileSync(join(repositoryRoot, 'action.yml'), 'utf8');
+
+            expect(manifest).toContain('command:');
+            expect(manifest).toContain('component-name:');
+            expect(manifest).toContain('affected-version:');
+            expect(manifest).toContain('fix-version:');
+            expect(manifest).toContain('branch-name:');
+            expect(manifest).toContain('commit-hash:');
+            expect(manifest).toContain('main: "action/lib/main.js"');
+        });
+
+        it('Passes the repository default branch when branch-name is omitted', () => {
+            const workflow: string = readFileSync(join(repositoryRoot, '.github', 'workflows', 'frogbot-auto-pr.yml'), 'utf8');
+
+            expect(workflow).toContain('branch-name: ${{ inputs.branch-name || github.event.repository.default_branch }}');
+        });
+
+        it('Invokes the local Auto-PR action in CI', () => {
+            const workflow: string = readFileSync(join(repositoryRoot, '.github', 'workflows', 'action-test.yml'), 'utf8');
+
+            expect(workflow).toContain('uses: ./');
+        });
+    });
+
     describe('Frogbot URL Tests', () => {
         const myOs: jest.Mocked<typeof os> = os as any;
         let cases: string[][] = [
-            ['win32' as NodeJS.Platform, 'amd64', 'jfrog.exe', 'https://releases.jfrog.io/artifactory/frogbot/v1/1.2.3/frogbot-windows-amd64/jfrog.exe',],
+            [
+                'win32' as NodeJS.Platform,
+                'amd64',
+                'jfrog.exe',
+                'https://releases.jfrog.io/artifactory/frogbot/v1/1.2.3/frogbot-windows-amd64/jfrog.exe',
+            ],
             ['darwin' as NodeJS.Platform, 'amd64', 'jfrog', 'https://releases.jfrog.io/artifactory/frogbot/v1/1.2.3/frogbot-mac-386/jfrog'],
             ['darwin' as NodeJS.Platform, 'arm64', 'jfrog', 'https://releases.jfrog.io/artifactory/frogbot/v1/1.2.3/frogbot-mac-arm64/jfrog'],
             ['linux' as NodeJS.Platform, 'amd64', 'jfrog', 'https://releases.jfrog.io/artifactory/frogbot/v1/1.2.3/frogbot-linux-amd64/jfrog'],
@@ -158,9 +193,9 @@ describe('Frogbot Action Tests', () => {
             process.env['GITHUB_TOKEN'] = 'ghp_test_token_123';
             process.env['GITHUB_REPOSITORY_OWNER'] = 'jfrog';
             process.env['GITHUB_REPOSITORY'] = 'jfrog/frogbot';
-            
+
             await Utils.setFrogbotEnv();
-            
+
             expect(process.env['JF_GIT_TOKEN']).toBe('ghp_test_token_123');
         });
 
@@ -169,16 +204,16 @@ describe('Frogbot Action Tests', () => {
             process.env['GITHUB_TOKEN'] = 'ghp_test_token_123';
             process.env['GITHUB_REPOSITORY_OWNER'] = 'jfrog';
             process.env['GITHUB_REPOSITORY'] = 'jfrog/frogbot';
-            
+
             await Utils.setFrogbotEnv();
-            
+
             expect(process.env['JF_GIT_TOKEN']).toBe('custom_token_456');
         });
 
         it('Should throw error if no token is available', async () => {
             process.env['GITHUB_REPOSITORY_OWNER'] = 'jfrog';
             process.env['GITHUB_REPOSITORY'] = 'jfrog/frogbot';
-            
+
             await expect(Utils.setFrogbotEnv()).rejects.toThrow('Git token not found');
         });
     });
@@ -197,9 +232,9 @@ describe('Frogbot Action Tests', () => {
             process.env['GITHUB_TOKEN'] = 'ghp_test_token';
             process.env['GITHUB_REPOSITORY_OWNER'] = 'jfrog';
             process.env['GITHUB_REPOSITORY'] = 'jfrog/frogbot';
-            
+
             await Utils.setFrogbotEnv();
-            
+
             expect(process.env['JF_GIT_API_ENDPOINT']).toBe('https://api.github.enterprise.com');
         });
 
@@ -207,9 +242,9 @@ describe('Frogbot Action Tests', () => {
             process.env['GITHUB_TOKEN'] = 'ghp_test_token';
             process.env['GITHUB_REPOSITORY_OWNER'] = 'jfrog';
             process.env['GITHUB_REPOSITORY'] = 'jfrog/frogbot';
-            
+
             await Utils.setFrogbotEnv();
-            
+
             expect(process.env['JF_GIT_API_ENDPOINT']).toBe('https://api.github.com');
         });
 
@@ -219,9 +254,9 @@ describe('Frogbot Action Tests', () => {
             process.env['GITHUB_TOKEN'] = 'ghp_test_token';
             process.env['GITHUB_REPOSITORY_OWNER'] = 'jfrog';
             process.env['GITHUB_REPOSITORY'] = 'jfrog/frogbot';
-            
+
             await Utils.setFrogbotEnv();
-            
+
             expect(process.env['JF_GIT_API_ENDPOINT']).toBe('https://custom.api.com');
         });
     });

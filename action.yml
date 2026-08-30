@@ -2,6 +2,24 @@ name: "Frogbot by JFrog"
 description: "JFrog Frogbot is a Git bot that scans your pull requests and repositories for security vulnerabilities."
 author: "JFrog"
 inputs:
+  command:
+    description: "Frogbot command to run. Set to auto-pr to fix a known vulnerable dependency."
+    required: false
+  component-name:
+    description: "Dependency to fix when command is auto-pr."
+    required: false
+  affected-version:
+    description: "Currently installed vulnerable version when command is auto-pr."
+    required: false
+  fix-version:
+    description: "Version to upgrade to when command is auto-pr."
+    required: false
+  branch-name:
+    description: "Branch to base the fix PR on when command is auto-pr."
+    required: false
+  commit-hash:
+    description: "Exact commit the vulnerability was detected in."
+    required: false
   version:
     description: "Frogbot version"
     default: "latest"
