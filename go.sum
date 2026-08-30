@@ -21,8 +21,6 @@ github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFI
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5 h1:0CwZNZbxp69SHPdPJAN/hZIm0C4OItdklCFmMRWYpio=
 github.com/armon/go-socks5 v0.0.0-20160902184237-e75332964ef5/go.mod h1:wHh0iHkYZB8zMSxRWpUBQtwG5a7fFgvEO+odwuTv2gs=
-github.com/attiasas/jfrog-cli-security v0.0.0-20260830073119-6c97a5cc8fe4 h1:QgA9qcxYDdKWoefE7LX/stGZNdpY/FD+cQebPYmdJpY=
-github.com/attiasas/jfrog-cli-security v0.0.0-20260830073119-6c97a5cc8fe4/go.mod h1:T1LXsW+LORDBJbZGiEPxdWeOn+zzaOGwoBFQwvEL37A=
 github.com/beevik/etree v1.7.0 h1:xjBk9O4p4x7D1YajePjfLzdaFC4/uYUENA7P0pv6gXA=
 github.com/beevik/etree v1.7.0/go.mod h1:bh4zJxiIr62SOf9pRzN7UUYaEDa9HEKafK25+sLc0Gc=
 github.com/bradleyjkemp/cupaloy/v2 v2.8.0 h1:any4BmKE+jGIaMpnU8YgH/I2LPiLBufr6oMMlVBbn9M=
@@ -156,6 +154,8 @@ github.com/jfrog/jfrog-cli-artifactory v0.8.1-0.20260819070735-a590327f2489 h1:F
 github.com/jfrog/jfrog-cli-artifactory v0.8.1-0.20260819070735-a590327f2489/go.mod h1:1ACZmkzA38Si48i9f052M4BDLfti02lHUfL/f853Ny0=
 github.com/jfrog/jfrog-cli-core/v2 v2.60.1-0.20260814125750-77deb9f6259c h1:H77lybOSbPe2T70+l0Q9zy7eXWLbLj4ph2R2Svahf5A=
 github.com/jfrog/jfrog-cli-core/v2 v2.60.1-0.20260814125750-77deb9f6259c/go.mod h1:gf7aUg/G9JyltCNhwMD5RVEsFzUCKPWKXRcTXSqMYBk=
+github.com/jfrog/jfrog-cli-security v1.36.0 h1:VvjJJf+BkcYxZ8SSrYAAXpVT/vg/i/9qvvNV5LtO8BU=
+github.com/jfrog/jfrog-cli-security v1.36.0/go.mod h1:T1LXsW+LORDBJbZGiEPxdWeOn+zzaOGwoBFQwvEL37A=
 github.com/jfrog/jfrog-client-go v1.55.1-0.20260813100550-0f2168d02558 h1:/4ayHXxzgyZ9f66EqImCyZr2SKUpygU1P36sDVAlskM=
 github.com/jfrog/jfrog-client-go v1.55.1-0.20260813100550-0f2168d02558/go.mod h1:7B7eMRKuMhZ0rOdMItbJVpWjRUe1L//J3Jq+PgjiNxI=
 github.com/jhump/protoreflect v1.15.1 h1:HUMERORf3I3ZdX05WaQ6MIpd/NJ434hTp5YiKgfCL6c=
