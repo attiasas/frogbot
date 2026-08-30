@@ -17,3 +17,6 @@ The following findings triggered a policy rule configured to fail the pull reque
   - secrets/secret_generic/gibberish:1:1 [rule: generic-secret]
       Triggered:
         - Watch: 'pr-appsec-watch', Policy: 'no-secrets-pr', Rule: 'block-any-secret-pr'
+  - services/k8s/deployment.yaml:12:3 [rule: k8s-privileged-container]
+      Triggered:
+        - Watch: 'pr-appsec-watch', Policy: 'services-hardening-pr', Rule: 'block-misconfig-pr'

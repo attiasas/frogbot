@@ -324,6 +324,31 @@ func TestCollectFailingIssuesForPr(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "Services violation with fail_pr includes location and ruleId in the description",
+			violations: &violationutils.Violations{
+				Services: []violationutils.JasViolation{
+					{
+						Violation: violationutils.Violation{
+							Watch:    "appsec-watch",
+							Policies: []violationutils.Policy{{PolicyName: "services-hardening", Rule: "block-misconfig", FailPullRequest: true}},
+						},
+						Rule: sarif.NewReportingDescriptor().WithID("k8s-privileged-container"),
+						Location: sarif.NewLocation().WithPhysicalLocation(
+							sarif.NewPhysicalLocation().
+								WithArtifactLocation(sarif.NewArtifactLocation().WithURI("services/k8s/deployment.yaml")).
+								WithRegion(sarif.NewRegion().WithStartLine(12).WithStartColumn(3)),
+						),
+					},
+				},
+			},
+			expectedIssues: []failingIssue{
+				{
+					description: "services/k8s/deployment.yaml:12:3 [rule: k8s-privileged-container]",
+					triggers:    []violationTrigger{{watch: "appsec-watch", policy: "services-hardening", rule: "block-misconfig"}},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -535,6 +560,9 @@ func TestRenderedFailingIssues(t *testing.T) {
 				Sast: []violationutils.JasViolation{
 					jasFindingFixture("appsec-watch", "sast-medium", "block-medium-sast", "cleartext-connection", "sast/flask_webgoat/__init__.py", 29, 12),
 				},
+				Services: []violationutils.JasViolation{
+					jasFindingFixture("appsec-watch", "services-hardening", "block-misconfig", "k8s-privileged-container", "services/k8s/deployment.yaml", 12, 3),
+				},
 			},
 			action:       failActionBuild,
 			expectedFile: "../../testdata/logfailingrules/fail_build_results.txt",
@@ -586,6 +614,9 @@ func TestRenderedFailingIssues(t *testing.T) {
 				},
 				Sast: []violationutils.JasViolation{
 					jasFindingFixture("pr-appsec-watch", "sast-low-pr", "block-low-sast-pr", "info-leak", "sast/flask_webgoat/ui.py", 25, 9),
+				},
+				Services: []violationutils.JasViolation{
+					jasFindingFixture("pr-appsec-watch", "services-hardening-pr", "block-misconfig-pr", "k8s-privileged-container", "services/k8s/deployment.yaml", 12, 3),
 				},
 			},
 			action:       failActionPr,

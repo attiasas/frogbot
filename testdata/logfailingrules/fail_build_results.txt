@@ -17,3 +17,6 @@ The following findings triggered a policy rule configured to fail the build:
   - secrets/api_secrets/tokens:1:9 [rule: generic-api-key]
       Triggered:
         - Watch: 'appsec-watch', Policy: 'no-secrets', Rule: 'block-any-secret'
+  - services/k8s/deployment.yaml:12:3 [rule: k8s-privileged-container]
+      Triggered:
+        - Watch: 'appsec-watch', Policy: 'services-hardening', Rule: 'block-misconfig'

@@ -104,10 +104,11 @@ func collectFailingIssues(violations *violationutils.Violations, action failActi
 	}
 
 	// TODO Iac is always empty here until jfrog-cli-security's PolicyEnforcerViolationGenerator adds IaC support (remove this when solved in jfrog-cli-security)
-	allJas := make([]violationutils.JasViolation, 0, len(violations.Secrets)+len(violations.Iac)+len(violations.Sast))
+	allJas := make([]violationutils.JasViolation, 0, len(violations.Secrets)+len(violations.Iac)+len(violations.Sast)+len(violations.Services))
 	allJas = append(allJas, violations.Secrets...)
 	allJas = append(allJas, violations.Iac...)
 	allJas = append(allJas, violations.Sast...)
+	allJas = append(allJas, violations.Services...)
 
 	for _, v := range allJas {
 		key, description := jasIssueIdentity(v)
