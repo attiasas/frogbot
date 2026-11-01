@@ -13,7 +13,7 @@ require (
 	github.com/jfrog/froggit-go v1.24.0
 	github.com/jfrog/gofrog v1.7.7
 	github.com/jfrog/jfrog-cli-core/v2 v2.60.1-0.20261027135447-d76f4db4eedc
-	github.com/jfrog/jfrog-cli-security v1.41.1
+	github.com/jfrog/jfrog-cli-security v1.41.2
 	github.com/jfrog/jfrog-client-go v1.55.1-0.20261029150622-a2075f5e551a
 	github.com/owenrumney/go-sarif/v3 v3.2.3
 	github.com/stretchr/testify v1.11.1
@@ -130,8 +130,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-// attiasas:fix-ci-install-ruby-ununtu-26-04
-// replace github.com/jfrog/jfrog-cli-security => github.com/attiasas/jfrog-cli-security fix-ci-install-ruby-ununtu-26-04
+// replace github.com/jfrog/jfrog-cli-security => github.com/jfrog/jfrog-cli-security dev
 
 // replace github.com/jfrog/jfrog-cli-core/v2 => github.com/jfrog/jfrog-cli-core/v2 dev
 
