@@ -1,6 +1,6 @@
 module github.com/jfrog/frogbot/v3
 
-go 1.26.6
+go 1.26.10
 
 replace github.com/CycloneDX/cyclonedx-go => github.com/CycloneDX/cyclonedx-go v0.10.0
 
